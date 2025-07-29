@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { createOrder } from "./api/apiClient";
+import { createOrder } from "./pages/api/apiClient";
+import { toast } from "react-toastify";
 
 export default function CreateOrderForm({ onOrderCreated }) {
   const [form, setForm] = useState({
@@ -13,10 +14,12 @@ export default function CreateOrderForm({ onOrderCreated }) {
     e.preventDefault();
     try {
       const newOrder = await createOrder(form);
-      onOrderCreated?.(newOrder); // safe call
+      toast.success("✅ Order created successfully!");
+      onOrderCreated?.(newOrder);
       setForm({ customerName: "", product: "", quantity: 1, status: "pending" });
     } catch (err) {
-      alert("Failed to create order: " + err.message);
+      console.error("Order creation failed:", err);
+      toast.error("❌ Failed to create order: " + err.message);
     }
   }
 

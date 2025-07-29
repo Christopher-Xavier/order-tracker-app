@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchOrders, createOrder, updateOrder, deleteOrder } from "./api"; // adjust path as needed
+import { fetchOrders, createOrder, updateOrder, deleteOrder } from "./pages/api"; // adjust path as needed
 
 export default function OrderManager() {
     const [orders, setOrders] = useState([]);

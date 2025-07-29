@@ -1,6 +1,5 @@
-
 import { useEffect, useState } from "react";
-import { fetchOrders } from "./api/apiClient";
+import { fetchOrders } from "./pages/api/apiClient";
 import { useAuth0 } from "@auth0/auth0-react";
 
 export default function OrderList() {

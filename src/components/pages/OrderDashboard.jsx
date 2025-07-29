@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { fetchOrders, updateOrder, deleteOrder } from './api/apiClient';
-import CreateOrderForm from './CreateOrderForm';
+import CreateOrderForm from '../CreateOrderForm';
 
 function OrderDashboard() {
   const [orders, setOrders] = useState([]);
