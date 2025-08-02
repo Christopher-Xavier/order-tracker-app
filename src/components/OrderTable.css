@@ -1,0 +1,5 @@
+/* Optional: highlight entire Status column */
+td:nth-child(2),
+th:nth-child(2) {
+  background-color: #f0f8ff;
+}

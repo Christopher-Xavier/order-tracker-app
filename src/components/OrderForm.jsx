@@ -11,7 +11,7 @@ export default function OrderForm() {
       newErrors.customerName = "Name is required.";
     } else if (name.length < 3) {
       newErrors.customerName = "Name must be at least 3 characters.";
-    } else if (!/^[A-Za-z\\s]+$/.test(name)) {
+    } else if (!/^[A-Za-z\s]+$/.test(name)) {
       newErrors.customerName = "Only letters and spaces are allowed.";
     }
     return newErrors;
@@ -33,6 +33,13 @@ export default function OrderForm() {
 
     // Simulate API submission
     setStatusMessage(`✅ Order submitted for ${customerName}`);
+    setCustomerName("");
+    setErrors({});
+  };
+
+  const handleDelete = () => {
+    // Simulate deletion logic
+    setStatusMessage(`🗑️ Order for "${customerName}" has been deleted.`);
     setCustomerName("");
     setErrors({});
   };
@@ -60,12 +67,22 @@ export default function OrderForm() {
           )}
         </div>
 
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-        >
-          Submit Order
-        </button>
+        <div className="flex space-x-4">
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          >
+            Submit Order
+          </button>
+
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+          >
+            Delete Order
+          </button>
+        </div>
       </form>
 
       {statusMessage && (
@@ -74,15 +91,4 @@ export default function OrderForm() {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
 

@@ -1,55 +1,82 @@
-import { useEffect, useState } from "react";
-import { fetchOrders } from "./pages/api/apiClient";
-import { useAuth0 } from "@auth0/auth0-react";
-
-export default function OrderList() {
+history
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+ 
+function OrderList() {
   const [orders, setOrders] = useState([]);
-  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
 
   useEffect(() => {
-    async function loadOrders() {
-      if (!isAuthenticated) return;
+    fetchOrders();
+  }, []);
 
-      try {
-        const token = await getAccessTokenSilently({
-          authorizationParams: {
-            audience: "https://order-tracker-api", // Set this in Auth0 API settings
-            scope: "read:orders",
-          },
-        });
+  const fetchOrders = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No token found');
 
-        const data = await fetchOrders(token); // Pass token to API client
+      const res = await fetch('http://localhost:3001/api/orders', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-        console.log("Type of data:", typeof data);
-        console.log("Is array:", Array.isArray(data));
-        console.log("Data content:", data);
-
-        const normalized = Array.isArray(data)
-          ? data
-          : Array.isArray(data?.orders)
-          ? data.orders
-          : [];
-
-        setOrders(normalized);
-      } catch (error) {
-        console.error("Error loading orders:", error);
-        setOrders([]);
-      }
+      if (!res.ok) throw new Error('Failed to fetch orders');
+      const data = await res.json();
+      setOrders(data);
+    } catch (err) {
+      console.error(err);
+      toast.error('❌ Could not load orders');
     }
+  };
 
-    loadOrders();
-  }, [getAccessTokenSilently, isAuthenticated]);
+  const handleDelete = async (orderId) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No token found');
+
+      const res = await fetch(`http://localhost:3001/api/orders/${orderId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!res.ok) throw new Error('Failed to delete order');
+      toast.success('✅ Order deleted');
+      setOrders(prev => prev.filter(order => order.id !== orderId));
+    } catch (err) {
+      console.error(err);
+      toast.error('❌ Could not delete order');
+    }
+  };
 
   return (
     <div>
-      <h2>Orders</h2>
-      <ul>
-        {orders.map((order, index) => (
-          <li key={order.id ?? index}>
-            {order.customer_name ?? "Unknown"} - {order.status ?? "Pending"}
-          </li>
-        ))}
-      </ul>
+      <h4>📋 Orders</h4>
+      {orders.length === 0 ? (
+        <p>No orders found.</p>
+      ) : (
+        <ul className="list-group">
+          {orders.map(order => (
+            <li key={order.id} className="list-group-item">
+              <strong>{order.customerName}</strong> — {order.status}
+              <br />
+              Items: {Array.isArray(order.items) ? order.items.join(', ') : 'No items listed'}
+              <br />
+              <button
+                className="btn btn-danger btn-sm mt-2"
+                onClick={() => handleDelete(order.id)}
+              >
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
+
+export default OrderList;

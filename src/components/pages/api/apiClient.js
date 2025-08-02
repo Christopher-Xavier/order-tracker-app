@@ -1,57 +1,62 @@
-import { toast } from "react-toastify";
+const API_BASE = "http://localhost:3001/api/orders";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
-
+// Helper to retrieve token from localStorage
 function getAuthHeaders() {
   const token = localStorage.getItem("token");
-  return {
-    "Content-Type": "application/json",
-    ...(token && { Authorization: `Bearer ${token}` }),
-  };
+  return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-async function fetchWithHandling(url, options = {}, successMsg = null) {
+// Fetch all orders
+export async function fetchOrders() {
+  const res = await fetch(`${API_BASE}`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error("Failed to fetch orders");
+  return res.json();
+}
+
+// Create a new order
+export async function createOrder(orderData) {
   try {
-    const response = await fetch(url, {
-      ...options,
-      headers: getAuthHeaders(),
+    const response = await fetch(`${API_BASE}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeaders(), // ✅ Inject token securely
+      },
+      body: JSON.stringify(orderData),
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || "Unknown error");
+      throw new Error('Failed to create order');
     }
 
-    const data = await response.json();
-    if (successMsg) toast.success(successMsg);
-    return data;
-  } catch (err) {
-    console.error("API Error:", err);
-    toast.error(`❌ ${err.message}`);
-    throw err;
+    return await response.json();
+  } catch (error) {
+    console.error('Order creation failed:', error);
+    throw error;
   }
 }
 
-export function fetchOrders() {
-  return fetchWithHandling(`${API_BASE}/orders`);
-}
-
-export function createOrder(orderData) {
-  return fetchWithHandling(`${API_BASE}/orders`, {
-    method: "POST",
-    body: JSON.stringify(orderData),
-  }, "✅ Order created!");
-}
-
-export function updateOrder(id, order) {
-  return fetchWithHandling(`${API_BASE}/orders/${id}`, {
+// Update an existing order
+export async function updateOrder(id, orderData) {
+  const res = await fetch(`${API_BASE}/${id}`, {
     method: "PUT",
-    body: JSON.stringify(order),
-  }, "✏️ Order updated!");
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders(),
+    },
+    body: JSON.stringify(orderData),
+  });
+  if (!res.ok) throw new Error("Failed to update order");
+  return res.json();
 }
 
-export function deleteOrder(id) {
-  return fetchWithHandling(`${API_BASE}/orders/${id}`, {
+// Delete an order
+export async function deleteOrder(id) {
+  const res = await fetch(`${API_BASE}/${id}`, {
     method: "DELETE",
-  }, "🗑️ Order deleted");
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error("Failed to delete order");
 }
