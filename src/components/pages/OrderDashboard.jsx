@@ -87,7 +87,7 @@ function OrderDashboard() {
 
   return (
     <div style={{ padding: "2rem", maxWidth: "600px", margin: "auto" }}>
-      <h2>📦 Order Tracking Dashboard</h2>
+      <h2>📦 OrderNEST  Dashboard</h2>
 
       <CreateOrderForm onOrderCreated={loadOrders} />
 

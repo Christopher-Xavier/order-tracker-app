@@ -9,7 +9,7 @@ export default function Header() {
       boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
       color: "#fff"
     }}>
-      <h1 style={{ margin: 0, fontSize: "1.25rem" }}>🚀 Otracker Dashboard</h1>
+      <h1 style={{ margin: 0, fontSize: "1.25rem" }}>🚀 Order Nest Dashboard</h1>
 
       <input
         type="text"
@@ -24,7 +24,7 @@ export default function Header() {
         aria-label="Search orders"
       />
 
-      <div style={{ fontSize: "1rem" }}>👤 Adimin </div>
+      <div style={{ fontSize: "1rem" }}>👤 Admin </div>
     </header>
   );
 }
