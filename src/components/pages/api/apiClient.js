@@ -1,6 +1,7 @@
+history
 const API_BASE = "http://localhost:3001/api/orders";
 
-// Helper to retrieve token from localStorage
+// Helper to get JWT token from localStorage
 function getAuthHeaders() {
   const token = localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
@@ -22,7 +23,7 @@ export async function createOrder(orderData) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...getAuthHeaders(), // ✅ Inject token securely
+        ...getAuthHeaders(), // ✅ FIXED: use helper to inject token
       },
       body: JSON.stringify(orderData),
     });

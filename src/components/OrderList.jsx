@@ -1,13 +1,8 @@
-history
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
- 
+
 function OrderList() {
   const [orders, setOrders] = useState([]);
-
-  useEffect(() => {
-    fetchOrders();
-  }, []);
 
   const fetchOrders = async () => {
     try {
@@ -30,12 +25,12 @@ function OrderList() {
     }
   };
 
-  const handleDelete = async (orderId) => {
+  const handleDelete = async (id, customerName) => {
     try {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No token found');
 
-      const res = await fetch(`http://localhost:3001/api/orders/${orderId}`, {
+      const res = await fetch(`http://localhost:3001/api/orders/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -44,13 +39,17 @@ function OrderList() {
       });
 
       if (!res.ok) throw new Error('Failed to delete order');
-      toast.success('✅ Order deleted');
-      setOrders(prev => prev.filter(order => order.id !== orderId));
+      toast.success(`🗑️ Order for "${customerName}" has been deleted`);
+      fetchOrders(); // refresh list
     } catch (err) {
       console.error(err);
       toast.error('❌ Could not delete order');
     }
   };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
   return (
     <div>
@@ -60,16 +59,17 @@ function OrderList() {
       ) : (
         <ul className="list-group">
           {orders.map(order => (
-            <li key={order.id} className="list-group-item">
-              <strong>{order.customerName}</strong> — {order.status}
-              <br />
-              Items: {Array.isArray(order.items) ? order.items.join(', ') : 'No items listed'}
-              <br />
+            <li key={order.id} className="list-group-item d-flex justify-content-between align-items-start">
+              <div>
+                <strong>{order.customerName}</strong> — {order.status}
+                <br />
+                Items: {Array.isArray(order.items) ? order.items.join(', ') : 'No items listed'}
+              </div>
               <button
-                className="btn btn-danger btn-sm mt-2"
-                onClick={() => handleDelete(order.id)}
+                className="btn btn-danger btn-sm"
+                onClick={() => handleDelete(order.id, order.customerName)}
               >
-                Delete
+                🗑️ Delete
               </button>
             </li>
           ))}
